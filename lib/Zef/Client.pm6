@@ -433,6 +433,9 @@ class Zef::Client {
             });
 
             # todo: Change config.json to `"Filter" : { "License" : "xxx" }`)
+            say "whitelist: ", $!config<License>.<whitelist>.join(',');
+            say "blacklist: ", $!config<License>.<blacklist>.join(',');
+            say "thismodule: ", $dist.license;
             my $msg = do given $!config<License> {
                 CATCH { default {
                     die "{$_.message}\n"
