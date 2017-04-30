@@ -22,11 +22,21 @@ grammar Grammar::SPDX::Expression {
         | <license-ref>
     }
     proto token complex-expression { * }
-    regex complex-expression:sym<WITH> { \s+ <( 'WITH' \s+ <license-exception-id> }
-    regex complex-expression:sym<AND>  { \s+ <( 'AND'  \s+
-    [ <paren-expression> | <compound-expression> | <simple-expression> ]
+    regex complex-expression:sym<WITH> {
+        \s+ <(
+        'WITH' \s+
+        <license-exception-id>
     }
-    regex complex-expression:sym<OR>   { \s+ <( 'OR'   \s+ [ <simple-expression> | <paren-expression> | <compound-expression>  ]    }
+    regex complex-expression:sym<AND>  {
+        \s+ <(
+        'AND'  \s+
+        [ <simple-expression> | <paren-expression> | <compound-expression> ]
+    }
+    regex complex-expression:sym<OR>   {
+        \s+ <(
+        'OR'   \s+
+        [ <simple-expression> | <paren-expression> | <compound-expression>  ]
+    }
     regex paren-expression {
         '(' <compound-expression> ')'
     }
@@ -40,9 +50,9 @@ grammar Grammar::SPDX::Expression {
 }
 my @list =
     'MIT AND (LGPL-2.1+ OR BSD-3-Clause)' => 12,
-    '(MIT AND LGPL-2.1+) OR BSD-3-Clause' => 13,
-    'MIT AND LGPL-2.1+' => 8,
-    '(MIT AND GPL-1.0)' => 9,
+    '(MIT AND LGPL-2.1+) OR BSD-3-Clause' => 12,
+    'MIT AND LGPL-2.1+' => 7,
+    '(MIT AND GPL-1.0)' => 8,
     '(MIT WITH GPL)' => 7,
     'MIT' => 3,
 ;
@@ -52,9 +62,5 @@ for @list {
     is $parse.gist.lines.elems, .value, "{.key} .gist.lines >= {.value}";
 }
 my $thing;
-Grammar::SPDX::Expression.parse('(MIT AND LGPL-2.1+) OR BSD-3-Clause').say;
-Grammar::SPDX::Expression.parse('MIT AND GPL').say;
+Grammar::SPDX::Expression.parse(@list[1].key).say;
 done-testing;
-#ok $thing;
-#Grammar::SPDX::Expression.parse('(MIT AND LGPL-2.1+) OR BSD-3-Clause').say;
-#Grammar::SPDX::Expression.parse('MIT AND LGPL-2.1+').say;
